@@ -1,0 +1,59 @@
+{% extends 'app/base.html' %}
+{% block title %}Site{% endblock %}
+{% block content %}
+{% load crispy_forms_tags %}
+<section class="colored-section donthave col-lg-12">
+</section>
+<section class="forming">
+	<div class="container">
+		<div class="col-lg-8 col-md-10 mx-auto content">
+			<form method="POST" enctype='multipart/form-data'>
+              {% csrf_token %}
+              <fieldset class="form-group">
+                  {{ form|crispy }}
+              </fieldset>
+              <div class="form-group">
+                  <button class="btn btn-outline-light" type="submit">Generate</button>
+              </div>
+          </form>
+			{% if text %}
+			<div class="card result">
+                <div class="card-header">
+                    Result
+            </div>
+            <div class="card-body text-bg-light">
+			    <p class="card-text" id="cr">{{ text.file }}</p>
+			    <a href="{% url 'download_file' text.id %}" class="btn btn-outline-dark" id="eye">Download</a>
+            </div>
+			</div>
+			{% endif %}
+
+		</div>
+	</div>
+</section>
+<script>
+	const openBtn = document.getElementById('eye');
+	const closeBtn = document.getElementById('closeModal');
+	const modal = document.getElementById('modal');
+
+	openBtn.addEventListener('click', () => {
+		modal.classList.add('open');
+	});
+
+	closeBtn.addEventListener('click', () => {
+		modal.classList.remove('open');
+	});
+
+	function truncateText(selector, maxLength) {
+    let element = document.querySelector(selector);
+    let truncated = element.innerText;
+
+    if (truncated.length > maxLength) {
+        truncated = truncated.substr(0,maxLength) + '...';
+    }
+    return truncated;
+	}
+
+	document.querySelector('#cr').innerText = truncateText('#cr', 75);
+</script>
+{% endblock %}

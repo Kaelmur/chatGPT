@@ -1,0 +1,51 @@
+{% extends 'app/base.html' %}
+{% block title %}Profile{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="g" style="background-color: #FFFFE8;">
+<div class="container px-4 px-lg-5">
+    <div class="gg">
+        <h1>Profile</h1>
+    </div>
+</div>
+    </div>
+<style>
+    body {
+        background-color: #FFFFE8;
+    }
+</style>
+<div class="container">
+	{% if messages %}
+	{% for message in messages %}
+	<div class="alert alert-{{ message.tags }}" style="text-align: center">
+		{{ message }}
+	</div>
+	{% endfor %}
+	{% endif %}
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto content">
+          <div class="border-top pt-3">
+	          <div style="text-align: center;">
+				<h2>{{ user.username }}</h2>
+		        <p class="text-secondary">{{ user.email }}</p>
+	          </div>
+              <form method="post">
+                {% csrf_token %}
+	              {% if reset %}
+                <fieldset class="form-group">
+                    {{ form|crispy }}
+                </fieldset>
+                <div class="form-group">
+                  <button class="btn btn-outline-dark" type="submit">Submit</button>
+                </div>
+	              {% else %}
+	             <div class="form-group" style="text-align: center;">
+                  <button class="btn btn-outline-dark" type="submit">Change Profile</button>
+	             </div>
+	              {% endif %}
+              </form>
+          </div>
+        </div>
+    </div>
+  </div>
+{% endblock %}
