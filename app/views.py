@@ -48,9 +48,10 @@ def download_file(request, file_id):
     file = get_object_or_404(Work, pk=file_id)
     doc = Document()
     doc.add_paragraph(str(file.file))
-    doc.save(f"{MEDIA_ROOT}/new.docx")
-    file_path = f"{MEDIA_ROOT}/new.docx"
-    response = FileResponse(open(file_path, 'rb'))
-    response['Content-Type'] = 'application/octet-stream'
+    target_stream = io.BytesIO()
+    doc.save(target_stream)
+    target_stream.seek(0)
+    response = FileResponse(target_stream,
+                            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     response['Content-Disposition'] = f'attachment; filename="{file.id}.docx"'
     return response
