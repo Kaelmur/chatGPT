@@ -1,16 +1,17 @@
+import base64
 import io
-from django.http import HttpResponse
+import os
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Work
 from .forms import TextForm
-from django.contrib import messages
 from docx import Document
-from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
 from django.http import FileResponse
-from chatgpt.settings import MEDIA_ROOT
+import mammoth as mth
+from htmldocx import HtmlToDocx
+import requests
 
 
 def home(request):
@@ -18,17 +19,16 @@ def home(request):
     })
 
 
+def ignore_image(image):
+    return []
+
 @login_required
 def text(request):
     if request.method == "POST":
         t_form = TextForm(request.POST, request.FILES, instance=request.user)
         if t_form.is_valid():
-            doc = Document(request.FILES.get("file"))
-            fulltext = []
-            for para in doc.paragraphs:
-                fulltext.append(para.text)
-            fulltext = '\n'.join(fulltext)
-            n_text = Work(file=fulltext, user=request.user)
+            doc = mth.convert_to_html(request.FILES.get("file"), convert_image=ignore_image)
+            n_text = Work(file=doc.value, user=request.user)
             n_text.save()
         return redirect(request.path_info)
     else:
@@ -47,7 +47,18 @@ def text(request):
 def download_file(request, file_id):
     file = get_object_or_404(Work, pk=file_id)
     doc = Document()
-    doc.add_paragraph(str(file.file))
+    file_content = str(file.file)
+    file.file.close()
+    key = os.environ.get("yandex_key")
+    response = requests.get(url=f"https://translate.yandex.net/api/v1.5/tr.json/translate", params={"key": key,
+                                                                                                    "text": file_content,
+                                                                                                    "lang": "ru",
+                                                                                                    "format": "html"})
+    response.raise_for_status()
+    data = response.json()
+    translated_text = str(data["text"][0])
+    new_parser = HtmlToDocx()
+    new_parser.add_html_to_document(translated_text, doc)
     target_stream = io.BytesIO()
     doc.save(target_stream)
     target_stream.seek(0)

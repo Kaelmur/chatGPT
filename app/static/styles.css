@@ -37,63 +37,12 @@ html,body
 .result {
    margin-top: 50px;
 }
-#cr {
-   display: inline-block;
-}
-
-.modal {
-    background-color: black;
-    opacity: 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    transition: all 0.3s ease-in-out;
-    z-index: -1;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal.open {
-    opacity: 1;
-    z-index: 999;
-}
-
-.modal-inner {
-    overflow-y: scroll;
-    word-wrap: break-word;
-    background-color: white;
-    border-radius: 5px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-    padding: 15px 25px;
-    text-align: center;
-    max-height: 100%;
-    width: 1000px;
-}
-
-.modal-inner h2 {
-    color: black;
-    margin: 0;
-}
-
-.modal-inner p {
-    color: black;
-    line-height: 24px;
-    margin: 10px 0;
-
-}
-#eye {
-    float: right;
-}
-
-#closeModal {
-    float: right;
-}
 
 .g {
     padding-top: 100px;
     text-align: center;
+}
+
+body {
+    background-color: #FFFFE8;
 }

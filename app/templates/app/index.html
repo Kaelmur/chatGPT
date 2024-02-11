@@ -31,29 +31,4 @@
 		</div>
 	</div>
 </section>
-<script>
-	const openBtn = document.getElementById('eye');
-	const closeBtn = document.getElementById('closeModal');
-	const modal = document.getElementById('modal');
-
-	openBtn.addEventListener('click', () => {
-		modal.classList.add('open');
-	});
-
-	closeBtn.addEventListener('click', () => {
-		modal.classList.remove('open');
-	});
-
-	function truncateText(selector, maxLength) {
-    let element = document.querySelector(selector);
-    let truncated = element.innerText;
-
-    if (truncated.length > maxLength) {
-        truncated = truncated.substr(0,maxLength) + '...';
-    }
-    return truncated;
-	}
-
-	document.querySelector('#cr').innerText = truncateText('#cr', 75);
-</script>
 {% endblock %}
