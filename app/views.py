@@ -57,8 +57,34 @@ def download_file(request, file_id):
     response.raise_for_status()
     data = response.json()
     translated_text = str(data["text"][0])
+    prompt = {
+        "modelUri": f"gpt://{os.environ.get('folder_api')}/yandexgpt-lite",
+        "completionOptions": {
+            "stream": False,
+            "temperature": 0.6,
+            "maxTokens": "2000"
+        },
+        "messages": [
+            {
+                "role": "system",
+                "text": "Ты бот, который поможет с html текстом не оставляя сообщения о проделанной работе"
+            },
+            {
+                "role": "user",
+                "text": f"Перефразируй и оставь html аттрибуты в тексте: {translated_text}"
+            }
+        ]
+    }
+
+    url = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Api-Key {os.environ.get('yandexgpt_api')}"
+    }
+    result = requests.post(url, headers=headers, json=prompt)
+    r = result.json()
     new_parser = HtmlToDocx()
-    new_parser.add_html_to_document(translated_text, doc)
+    new_parser.add_html_to_document(r['result']['alternatives'][0]['message']['text'], doc)
     target_stream = io.BytesIO()
     doc.save(target_stream)
     target_stream.seek(0)
